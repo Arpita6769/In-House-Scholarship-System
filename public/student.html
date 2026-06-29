@@ -1,21 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<button id="logoutBtn">Logout 🚪</button>
-<hr/>
-  <h2>Available Scholarships 🎓</h2>
 
-  <div id="scholarshipList"></div>
+  <nav class="navbar">
+    <div class="nav-brand">🎓 ScholarConnect</div>
+    <div class="nav-right">
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </nav>
 
+  <div class="page-container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Available Scholarships</h2>
+        <p class="section-sub">Browse and apply for scholarships you're eligible for</p>
+      </div>
+    </div>
 
-<hr/>
+    <div class="scholarship-grid" id="scholarshipList"></div>
 
-<h2>My Applications 📄</h2>
-<div id="myApplications"></div>
-  <script src="script.js?v=2"></script>
+    <hr class="divider" />
+
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">My Applications</h2>
+        <p class="section-sub">Track the status of your applications</p>
+      </div>
+    </div>
+
+    <div id="myApplications"></div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,32 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class = "dashboard-conatiner">
-  <button id="logoutBtn">Logout 🚪</button>
-  <hr/>
 
-  <h2>Create Scholarship 🎓</h2>
+  <nav class="navbar">
+    <div class="nav-brand">🎓 ScholarConnect</div>
+    <div class="nav-right">
+      <span style="font-size:13px;color:#5f6368;">Admin Panel</span>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </nav>
 
-  <form id="createScholarshipForm">
-    <input type="text" id="title" placeholder="Title" required /><br/><br/>
-    <input type="text" id="description" placeholder="Description" required /><br/><br/>
-    <input type="number" id="amount" placeholder="Amount" required /><br/><br/>
-    <input type="number" id="min_cgpa" placeholder="Minimum CGPA" required /><br/><br/>
-    <input type="number" id="max_income" placeholder="Maximum Family Income" required /><br/><br/>
-    <input type="number" id="seats" placeholder="Number of Seats" required /><br/><br/>
-    <input type="date"id = "deadline"placeholder="Deadline" required/><br></br>
-    <button type="submit">Create</button>
-  </form>
+  <div class="page-container">
 
-  <hr/>
+    <!-- Create Scholarship -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Create Scholarship</h2>
+        <p class="section-sub">Add a new scholarship for students to apply</p>
+      </div>
+    </div>
 
-  <h2>All Applications 📋</h2>
-  <div id="applicationsList"></div>
-</div>
+    <div class="admin-form-card">
+      <form id="createScholarshipForm">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Title <span class="required-star">*</span></label>
+            <input class="form-input" type="text" id="title" placeholder="e.g. Merit Scholarship" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount (₹) <span class="required-star">*</span></label>
+            <input class="form-input" type="number" id="amount" placeholder="e.g. 50000" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description <span class="required-star">*</span></label>
+          <textarea class="form-input" id="description" rows="3"
+            placeholder="Describe the scholarship, who it's for, and eligibility criteria..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Minimum CGPA</label>
+            <input class="form-input" type="number" id="min_cgpa" placeholder="e.g. 8.0" step="0.1" min="0" max="10" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Maximum Family Income (₹)</label>
+            <input class="form-input" type="number" id="max_income" placeholder="e.g. 300000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Number of Seats <span class="required-star">*</span></label>
+            <input class="form-input" type="number" id="seats" placeholder="e.g. 10" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Deadline <span class="required-star">*</span></label>
+            <input class="form-input" type="date" id="deadline" required />
+          </div>
+        </div>
+
+        <!-- Required Documents Section -->
+        <div class="form-group">
+          <label class="form-label">Required Documents</label>
+          <p class="section-sub" style="margin-bottom:10px;">
+            Add documents students must upload when applying
+          </p>
+          <div id="docFields">
+            <!-- doc rows added dynamically -->
+          </div>
+          <button type="button" class="btn-add-doc" id="addDocBtn">+ Add document</button>
+        </div>
+
+        <div id="createMsg" class="form-msg"></div>
+
+        <div class="form-actions" style="justify-content:flex-start;">
+          <button type="submit" class="btn-primary">Create Scholarship</button>
+        </div>
+
+      </form>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- All Applications -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">All Applications</h2>
+        <p class="section-sub">Review and approve or reject student applications</p>
+      </div>
+    </div>
+
+    <div id="applicationsList"></div>
+
+  </div>
+
   <script src="script.js"></script>
+
+  <script>
+    // ── Dynamic document fields ───────────────────
+    let docCount = 0;
+
+    document.getElementById("addDocBtn").addEventListener("click", () => {
+      docCount++;
+      const row = document.createElement("div");
+      row.className = "doc-field-row";
+      row.id = "docRow_" + docCount;
+      row.innerHTML = `
+        <input class="form-input" type="text"
+          placeholder="Document name (e.g. Latest marksheet)"
+          id="doc_name_${docCount}" />
+        <input class="form-input" type="text"
+          placeholder="Hint (e.g. Current semester results)"
+          id="doc_hint_${docCount}" />
+        <label class="checkbox-label">
+          <input type="checkbox" id="doc_req_${docCount}" checked />
+          Required
+        </label>
+        <button type="button" class="btn-remove-doc"
+          onclick="document.getElementById('docRow_${docCount}').remove()">✕</button>
+      `;
+      document.getElementById("docFields").appendChild(row);
+    });
+
+    // Collect documents before form submits
+    // (script.js createScholarshipForm handler reads window.getDocuments())
+    window.getDocuments = function () {
+      const docs = [];
+      document.querySelectorAll("[id^='doc_name_']").forEach(input => {
+        const num = input.id.replace("doc_name_", "");
+        const name = input.value.trim();
+        if (!name) return;
+        docs.push({
+          doc_name: name,
+          doc_hint: document.getElementById("doc_hint_" + num)?.value.trim() || "",
+          is_required: document.getElementById("doc_req_" + num)?.checked ?? true,
+        });
+      });
+      return docs;
+    };
+  </script>
+
 </body>
 </html>

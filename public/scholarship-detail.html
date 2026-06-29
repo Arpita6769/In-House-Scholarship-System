@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scholarship Detail</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">🎓 ScholarConnect</div>
+    <div class="nav-right">
+      <a href="student.html" class="btn-back">← Back</a>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-container" id="detailContainer">
+    <p class="loading-text">Loading scholarship details...</p>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    const params = new URLSearchParams(window.location.search);
+    const scholarshipId = params.get("id");
+    if (!scholarshipId) window.location.href = "student.html";
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+
+    function formatCurrency(amount) {
+      return "₹" + Number(amount).toLocaleString("en-IN");
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "No deadline";
+      return new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    function daysLeft(dateStr) {
+      if (!dateStr) return null;
+      return Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24));
+    }
+
+    async function loadDetail() {
+      try {
+        const res = await fetch(`/api/auth/scholarships/${scholarshipId}`, {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (!res.ok) throw new Error("Failed");
+        const s = await res.json();
+
+        const days = daysLeft(s.deadline);
+        const deadlineHtml = days !== null
+          ? days <= 7
+            ? `<span class="deadline-warn">⏰ ${days} days left</span>`
+            : `<span>${formatDate(s.deadline)}</span>`
+          : "<span>No deadline</span>";
+
+        const docsHtml = s.required_documents && s.required_documents.length > 0
+          ? s.required_documents.map(doc => `
+              <div class="doc-item">
+                <div class="doc-icon">📄</div>
+                <div class="doc-info">
+                  <div class="doc-name">${doc.doc_name}</div>
+                  ${doc.doc_hint ? `<div class="doc-hint">${doc.doc_hint}</div>` : ""}
+                </div>
+                <span class="doc-tag ${doc.is_required ? 'tag-required' : 'tag-optional'}">
+                  ${doc.is_required ? "Required" : "Optional"}
+                </span>
+              </div>`).join("")
+          : `<p class="no-docs">No specific documents listed. Contact admin for details.</p>`;
+
+        const uploadFieldsHtml = s.required_documents && s.required_documents.length > 0
+          ? s.required_documents.map(doc => `
+              <div class="form-group">
+                <label class="form-label">
+                  ${doc.doc_name}
+                  ${doc.is_required ? '<span class="required-star">*</span>' : '<span class="optional-tag">(optional)</span>'}
+                </label>
+                <div class="upload-box" onclick="document.getElementById('file_${doc.id}').click()">
+                  <span class="upload-icon">📎</span>
+                  <span class="upload-text"><span class="upload-link">Choose file</span> or drag and drop</span>
+                  <span class="upload-hint">PDF, JPG, PNG — max 5MB</span>
+                </div>
+                <input type="file" id="file_${doc.id}" name="${doc.doc_name}"
+                  accept=".pdf,.jpg,.jpeg,.png" style="display:none"
+                  onchange="updateUploadLabel(this)" />
+                <span class="file-chosen" id="chosen_${doc.id}"></span>
+              </div>`).join("")
+          : `<div class="form-group">
+               <label class="form-label">Upload supporting document (optional)</label>
+               <div class="upload-box" onclick="document.getElementById('file_general').click()">
+                 <span class="upload-icon">📎</span>
+                 <span class="upload-text"><span class="upload-link">Choose file</span> or drag and drop</span>
+                 <span class="upload-hint">PDF, JPG, PNG — max 5MB</span>
+               </div>
+               <input type="file" id="file_general" name="document"
+                 accept=".pdf,.jpg,.jpeg,.png" style="display:none"
+                 onchange="updateUploadLabel(this)" />
+               <span class="file-chosen" id="chosen_general"></span>
+             </div>`;
+
+        document.getElementById("detailContainer").innerHTML = `
+          <div class="detail-card">
+            <div class="detail-header">
+              <div>
+                <h2 class="detail-title">${s.title}</h2>
+                <p class="detail-meta">Deadline: ${deadlineHtml}</p>
+              </div>
+            </div>
+
+            <p class="detail-desc">${s.description || "No description provided."}</p>
+
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Amount</div>
+                <div class="stat-value">${formatCurrency(s.amount)}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Min. CGPA</div>
+                <div class="stat-value">${s.min_cgpa || "None"}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Max Family Income</div>
+                <div class="stat-value">${s.max_income ? formatCurrency(s.max_income) + "/yr" : "None"}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Seats left</div>
+                <div class="stat-value ${s.seats_left <= 3 ? 'warn' : ''}">${s.seats_left} of ${s.total_seats}</div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <h3 class="block-title">📋 Documents required</h3>
+              <div class="doc-list">${docsHtml}</div>
+            </div>
+
+            <div class="section-block">
+              <h3 class="block-title">✏️ Your application</h3>
+              <form id="applyForm">
+                <div class="form-group">
+                  <label class="form-label">Personal statement <span class="required-star">*</span></label>
+                  <textarea class="form-input" id="statement" rows="4"
+                    placeholder="Briefly describe why you deserve this scholarship..." required></textarea>
+                </div>
+
+                ${uploadFieldsHtml}
+
+                <div id="applyMsg" class="form-msg"></div>
+
+                <div class="form-actions">
+                  <a href="student.html" class="btn-secondary">Cancel</a>
+                  <button type="submit" class="btn-primary" id="submitBtn">Submit Application</button>
+                </div>
+              </form>
+            </div>
+          </div>`;
+
+        document.getElementById("applyForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const submitBtn = document.getElementById("submitBtn");
+          submitBtn.textContent = "Submitting...";
+          submitBtn.disabled = true;
+
+          const formData = new FormData();
+          formData.append("statement", document.getElementById("statement").value);
+
+          document.querySelectorAll('input[type="file"]').forEach(input => {
+            if (input.files[0]) formData.append(input.name, input.files[0]);
+          });
+
+          try {
+            const res = await fetch(`/api/auth/apply/${scholarshipId}`, {
+              method: "POST",
+              headers: { Authorization: "Bearer " + token },
+              body: formData
+            });
+
+            const data = await res.json();
+            const msgEl = document.getElementById("applyMsg");
+
+            if (res.ok) {
+              msgEl.className = "form-msg success";
+              msgEl.textContent = "✅ Application submitted successfully!";
+              submitBtn.textContent = "Applied!";
+              setTimeout(() => window.location.href = "student.html", 2000);
+            } else {
+              msgEl.className = "form-msg error";
+              msgEl.textContent = "❌ " + data.message;
+              submitBtn.textContent = "Submit Application";
+              submitBtn.disabled = false;
+            }
+          } catch (err) {
+            document.getElementById("applyMsg").textContent = "Something went wrong.";
+            submitBtn.textContent = "Submit Application";
+            submitBtn.disabled = false;
+          }
+        });
+
+      } catch (err) {
+        document.getElementById("detailContainer").innerHTML =
+          `<p class="error-text">Failed to load. <a href="student.html">Go back</a></p>`;
+      }
+    }
+
+    function updateUploadLabel(input) {
+      const idSuffix = input.id.replace("file_", "");
+      const el = document.getElementById("chosen_" + idSuffix);
+      if (el && input.files[0]) el.textContent = "✅ " + input.files[0].name;
+    }
+
+    loadDetail();
+  </script>
+</body>
+</html>
