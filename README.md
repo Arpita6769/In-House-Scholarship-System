@@ -24,14 +24,16 @@ Admin Dashboard - https://github.com/user-attachments/assets/a33c3add-5751-472d-
     Approve or reject applications.
 
 # Tech Stack
-  Frontend - HTML, CSS, JavaSript
-  Backend - Node.js, Express.js
-  Database - MySQL
-  Authentication - JWT(Json Web Token)
-  Password Hashing - Bycrypt
-  File Uploads - Multer
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Node.js, Express.js
+- **Database:** MySQL
+- **Authentication:** JWT (JSON Web Token)
+- **Password Hashing:** bcrypt
+- **File Uploads:** Multer
 
 # Project Structure
+```text
 scholarship-system/
  -- controllers/
      -- authController.js     # all business logic
@@ -54,6 +56,6 @@ scholarship-system/
 --server.js                 # entry point
 --schema.sql                # database schema
 --.env                      # environment variables (gitignored)
-
+```
 
 
