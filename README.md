@@ -5,9 +5,9 @@
 - **Studnet Dashboard** - https://github.com/user-attachments/assets/79ab5f45-ccbd-4ca5-bae0-3d814eca9b92
 - **Scholarship Details** - https://github.com/user-attachments/assets/11b3111f-1273-472e-9013-899ec52615b6
                       https://github.com/user-attachments/assets/9df75319-6cea-4304-898a-9f79d536c6d7
-- **Admin Dashboard** - https://github.com/user-attachments/assets/a33c3add-5751-472d-b5b4-d464f45e8d2a
-                  https://github.com/user-attachments/assets/d5c6285c-2451-4373-a75b-5dea592c9d1b
-                  https://github.com/user-attachments/assets/4d9212f4-de15-452e-970d-fd440d057e83
+- **Admin Dashboard** - https://github.com/user-attachments/assets/be1505f1-faff-481c-9e75-50e0aec769a2" />
+                       https://github.com/user-attachments/assets/d5c6285c-2451-4373-a75b-5dea592c9d1b
+                       https://github.com/user-attachments/assets/4d9212f4-de15-452e-970d-fd440d057e83
 
 
 # Features
