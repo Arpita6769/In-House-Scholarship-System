@@ -1,11 +1,11 @@
 # A full stack web application that centralizes institutional scholarship system. Students can browse , apply and track scholarships while admins can create and manage them.
 
 # Screenshots
-Landing Page - https://github.com/user-attachments/assets/2b777d81-825f-4563-8409-0dbec4f90157
-Studnet Dashboard - https://github.com/user-attachments/assets/79ab5f45-ccbd-4ca5-bae0-3d814eca9b92
-Scholarship Details - https://github.com/user-attachments/assets/11b3111f-1273-472e-9013-899ec52615b6
+- **Landing Page** - https://github.com/user-attachments/assets/2b777d81-825f-4563-8409-0dbec4f90157
+- **Studnet Dashboard** - https://github.com/user-attachments/assets/79ab5f45-ccbd-4ca5-bae0-3d814eca9b92
+- **Scholarship Details** - https://github.com/user-attachments/assets/11b3111f-1273-472e-9013-899ec52615b6
                       https://github.com/user-attachments/assets/9df75319-6cea-4304-898a-9f79d536c6d7
-Admin Dashboard - https://github.com/user-attachments/assets/a33c3add-5751-472d-b5b4-d464f45e8d2a
+- **Admin Dashboard** - https://github.com/user-attachments/assets/a33c3add-5751-472d-b5b4-d464f45e8d2a
                   https://github.com/user-attachments/assets/d5c6285c-2451-4373-a75b-5dea592c9d1b
                   https://github.com/user-attachments/assets/4d9212f4-de15-452e-970d-fd440d057e83
 
